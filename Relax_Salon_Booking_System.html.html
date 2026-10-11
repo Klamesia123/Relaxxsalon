@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relax Salon — Online Booking & Appointment System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal-950:#0f2e33;
+    --teal-800:#16424d;
+    --teal-700:#1e5a67;
+    --sage:#7fa99b;
+    --amber:#e8a33d;
+    --amber-dark:#c9822a;
+    --cream:#faf7f2;
+    --paper:#fffdf9;
+    --ink:#20302f;
+    --ink-soft:#5c6b69;
+    --line:#e3ddd0;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces',serif;
+    color:var(--teal-950);
+    margin:0;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px;}
+
+  /* ---------- Header ---------- */
+  header{
+    padding:26px 0 20px;
+    border-bottom:1px solid var(--line);
+  }
+  header .wrap{display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-weight:700;font-size:22px;color:var(--teal-950);}
+  .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--amber);display:inline-block;}
+  nav{display:flex;gap:28px;font-size:14px;color:var(--ink-soft);}
+
+  /* ---------- Hero ---------- */
+  .hero{padding:64px 0 40px;}
+  .hero-grid{display:grid;grid-template-columns:1.05fr 0.95fr;gap:56px;align-items:end;}
+  .eyebrow-line{width:38px;height:3px;background:var(--amber);margin-bottom:18px;border-radius:2px;}
+  .hero h1{font-size:clamp(34px,4.6vw,52px);line-height:1.06;font-weight:600;letter-spacing:-0.01em;}
+  .hero h1 em{font-style:italic;color:var(--sage);}
+  .hero p.lede{margin-top:18px;font-size:17px;color:var(--ink-soft);max-width:46ch;}
+  .hero-stats{display:flex;gap:34px;margin-top:32px;}
+  .hero-stats div{border-left:2px solid var(--line);padding-left:14px;}
+  .hero-stats .num{font-family:'Fraunces',serif;font-size:26px;color:var(--teal-950);font-weight:600;}
+  .hero-stats .lab{font-size:12.5px;color:var(--ink-soft);}
+  .hero-card{
+    background:var(--teal-950);
+    border-radius:var(--radius);
+    padding:28px;
+    color:var(--cream);
+    position:relative;
+    overflow:hidden;
+  }
+  .hero-card::before{
+    content:"";position:absolute;right:-40px;top:-40px;width:160px;height:160px;
+    background:radial-gradient(circle, rgba(232,163,61,.35), transparent 70%);
+  }
+  .hero-card .tag{font-size:12.5px;color:var(--sage);margin-bottom:10px;}
+  .hero-card .slot{
+    display:flex;justify-content:space-between;align-items:center;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:10px;padding:12px 14px;margin-top:10px;font-size:14px;
+  }
+  .hero-card .slot.taken{opacity:.4;text-decoration:line-through;}
+  .hero-card .slot .pill{background:var(--amber);color:var(--teal-950);font-weight:600;font-size:11.5px;padding:3px 9px;border-radius:20px;}
+
+  /* ---------- Section base ---------- */
+  section{padding:54px 0;}
+  .section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:30px;gap:20px;flex-wrap:wrap;}
+  .section-head h2{font-size:28px;font-weight:600;}
+  .section-head p{color:var(--ink-soft);font-size:14.5px;max-width:40ch;margin:0;}
+
+  /* ---------- Booking wizard ---------- */
+  .wizard{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:34px;
+  }
+  .steps{display:flex;gap:0;margin-bottom:32px;border-bottom:1px solid var(--line);}
+  .step-tab{
+    flex:1;text-align:left;padding-bottom:16px;position:relative;color:var(--ink-soft);
+    font-size:13.5px;cursor:default;
+  }
+  .step-tab .n{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line);
+    font-size:12px;margin-right:8px;font-weight:600;color:var(--ink-soft);
+  }
+  .step-tab.active{color:var(--teal-950);font-weight:600;}
+  .step-tab.active .n{background:var(--teal-950);border-color:var(--teal-950);color:#fff;}
+  .step-tab.done .n{background:var(--sage);border-color:var(--sage);color:#fff;}
+  .step-tab.active::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--teal-950);}
+
+  .panel{display:none;}
+  .panel.active{display:block;animation:fadeIn .25s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+  .service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .service-card{
+    border:1.5px solid var(--line);border-radius:10px;padding:18px;cursor:pointer;transition:.15s border-color,.15s background;
+  }
+  .service-card:hover{border-color:var(--sage);}
+  .service-card.selected{border-color:var(--amber);background:#fff8ec;}
+  .service-card h3{font-size:16px;font-weight:600;margin-bottom:4px;}
+  .service-card .meta{font-size:12.5px;color:var(--ink-soft);}
+  .service-card .price{margin-top:10px;font-family:'Fraunces',serif;color:var(--teal-950);font-size:18px;font-weight:600;}
+
+  .cal-row{display:grid;grid-template-columns:1fr 1.2fr;gap:30px;}
+  .day-list{display:flex;flex-direction:column;gap:8px;}
+  .day-btn{
+    text-align:left;border:1.5px solid var(--line);border-radius:9px;padding:11px 14px;
+    background:none;font-family:'Inter';font-size:14px;cursor:pointer;color:var(--ink);
+  }
+  .day-btn .d{font-weight:600;}
+  .day-btn .m{color:var(--ink-soft);font-size:12px;}
+  .day-btn.active{border-color:var(--teal-950);background:var(--teal-950);color:#fff;}
+  .day-btn.active .m{color:var(--sage);}
+
+  .time-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-content:start;}
+  .time-btn{
+    border:1.5px solid var(--line);border-radius:9px;padding:10px;background:#fff;
+    font-size:13.5px;cursor:pointer;text-align:center;
+  }
+  .time-btn.booked{opacity:.35;text-decoration:line-through;cursor:not-allowed;background:#f2efe8;}
+  .time-btn.selected{border-color:var(--amber);background:var(--amber);color:var(--teal-950);font-weight:600;}
+
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field.full{grid-column:1/-1;}
+  .field label{font-size:12.5px;color:var(--ink-soft);font-weight:600;}
+  .field input,.field textarea{
+    border:1.5px solid var(--line);border-radius:8px;padding:11px 12px;font-family:'Inter';font-size:14px;
+    background:#fff;color:var(--ink);
+  }
+  .field input:focus,.field textarea:focus{outline:2px solid var(--sage);outline-offset:1px;border-color:var(--sage);}
+
+  .summary-box{
+    background:var(--cream);border:1px dashed var(--line);border-radius:10px;padding:16px 18px;margin-bottom:22px;font-size:14px;
+  }
+  .summary-box strong{color:var(--teal-950);}
+
+  .wizard-actions{display:flex;justify-content:space-between;margin-top:28px;}
+  button.btn{
+    font-family:'Inter';font-weight:600;font-size:14px;border-radius:8px;padding:12px 22px;
+    border:none;cursor:pointer;transition:.15s transform, .15s box-shadow;
+  }
+  button.btn:active{transform:scale(.98);}
+  .btn-primary{background:var(--teal-950);color:#fff;}
+  .btn-primary:hover{background:var(--teal-700);}
+  .btn-primary:disabled{background:#c8c3b6;cursor:not-allowed;}
+  .btn-ghost{background:none;color:var(--ink-soft);}
+  .btn-ghost:hover{color:var(--ink);}
+
+  /* ---------- Confirmation ---------- */
+  .confirm{
+    text-align:center;padding:30px 10px 10px;
+  }
+  .confirm .check{
+    width:56px;height:56px;border-radius:50%;background:var(--sage);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 18px;
+  }
+  .confirm-detail{
+    text-align:left;max-width:380px;margin:22px auto 0;background:var(--cream);border-radius:10px;padding:18px 20px;font-size:14px;
+  }
+  .confirm-detail div{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);}
+  .confirm-detail div:last-child{border-bottom:none;}
+  .confirm-detail .k{color:var(--ink-soft);}
+  .confirm-detail .v{font-weight:600;color:var(--teal-950);}
+
+  /* ---------- Dashboard preview ---------- */
+  .dash{background:var(--teal-950);border-radius:var(--radius);padding:30px;color:var(--cream);}
+  .dash-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+  .dash-head h3{color:#fff;font-size:18px;}
+  .dash-head span{font-size:12px;color:var(--sage);}
+  table.dash-table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  table.dash-table th{text-align:left;color:var(--sage);font-weight:600;padding:8px 10px;font-size:11.5px;letter-spacing:.02em;border-bottom:1px solid rgba(255,255,255,.15);}
+  table.dash-table td{padding:10px;border-bottom:1px solid rgba(255,255,255,.08);}
+  .status{padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:600;}
+  .status.confirmed{background:rgba(127,169,155,.25);color:#bfe0d1;}
+  .status.pending{background:rgba(232,163,61,.22);color:#f0c27f;}
+  .status.sync-pending{background:rgba(232,163,61,.22);color:#f0c27f;}
+  .status.sync-done{background:rgba(127,169,155,.25);color:#bfe0d1;}
+  #dashEmpty{color:var(--ink-soft);font-size:13.5px;padding:8px 0;}
+
+  /* ---------- Offline mode banner (Local/Offline Data Storage) ---------- */
+  .offline-bar{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:22px;
+  }
+  .offline-bar .left{display:flex;align-items:center;gap:10px;font-size:13.5px;}
+  .offline-dot{width:10px;height:10px;border-radius:50%;background:var(--sage);flex-shrink:0;}
+  .offline-bar.is-offline .offline-dot{background:var(--amber);}
+  .offline-bar .desc{color:var(--ink-soft);font-size:12.5px;}
+  .switch{position:relative;display:inline-block;width:42px;height:24px;flex-shrink:0;}
+  .switch input{opacity:0;width:0;height:0;}
+  .switch .slider{position:absolute;cursor:pointer;inset:0;background:var(--line);border-radius:24px;transition:.2s;}
+  .switch .slider::before{content:"";position:absolute;height:18px;width:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;}
+  .switch input:checked + .slider{background:var(--amber);}
+  .switch input:checked + .slider::before{transform:translateX(18px);}
+  .switch-row{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-soft);}
+
+  /* ---------- Print (receipt) ---------- */
+  .btn-print{
+    background:none;border:1.5px solid var(--teal-950);color:var(--teal-950);
+    border-radius:8px;padding:10px 18px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:'Inter';margin-top:16px;
+  }
+  .btn-print:hover{background:var(--teal-950);color:#fff;}
+  #printArea{display:none;}
+  @media print{
+    body *{visibility:hidden;}
+    #printArea, #printArea *{visibility:visible;}
+    #printArea{display:block;position:absolute;top:0;left:0;width:100%;padding:30px;}
+  }
+
+  /* ---------- Multi-window / OS integration ---------- */
+  .admin-toolbar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+  .btn-tool{
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#fff;
+    border-radius:8px;padding:9px 14px;font-size:12.5px;cursor:pointer;font-family:'Inter';font-weight:600;
+  }
+  .btn-tool:hover{background:rgba(255,255,255,.16);}
+
+  .tray-icon{
+    position:fixed;bottom:22px;right:22px;width:52px;height:52px;border-radius:50%;
+    background:var(--teal-950);color:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:20px;cursor:pointer;box-shadow:0 6px 18px rgba(15,46,51,.35);z-index:50;
+  }
+  .tray-menu{
+    position:fixed;bottom:82px;right:22px;background:var(--paper);border:1px solid var(--line);
+    border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.15);padding:10px;width:220px;display:none;z-index:50;
+  }
+  .tray-menu.open{display:block;}
+  .tray-menu .t-title{font-size:11.5px;color:var(--ink-soft);padding:6px 10px 2px;text-transform:uppercase;letter-spacing:.04em;}
+  .tray-menu button{
+    display:block;width:100%;text-align:left;background:none;border:none;padding:9px 10px;border-radius:8px;
+    font-size:13.5px;cursor:pointer;font-family:'Inter';color:var(--ink);
+  }
+  .tray-menu button:hover{background:var(--cream);}
+
+  /* ---------- Pop-out dashboard fallback (for previews that block window.open) ---------- */
+  .popout-overlay{
+    position:fixed;inset:0;background:rgba(15,46,51,.55);display:none;
+    align-items:center;justify-content:center;padding:20px;z-index:100;
+  }
+  .popout-overlay.open{display:flex;}
+  .popout-modal{
+    background:#0f2e33;border-radius:14px;max-width:520px;width:100%;max-height:82vh;
+    display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.45);
+  }
+  .popout-modal-head{
+    display:flex;align-items:center;justify-content:space-between;padding:14px 18px;
+    border-bottom:1px solid rgba(255,255,255,.12);flex-shrink:0;
+  }
+  .popout-modal-head span{color:#fff;font-weight:600;font-size:14px;}
+  .popout-modal-close{
+    background:none;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:7px;
+    width:28px;height:28px;font-size:14px;cursor:pointer;
+  }
+  .popout-modal iframe{border:0;width:100%;flex:1;min-height:320px;background:#0f2e33;}
+
+  /* ---------- GCash payment step ---------- */
+  .pay-summary{
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--cream);border:1px dashed var(--line);border-radius:10px;padding:16px 18px;margin-bottom:22px;
+  }
+  .pay-summary .lab{font-size:12.5px;color:var(--ink-soft);}
+  .pay-summary .amt{font-family:'Fraunces',serif;font-size:26px;font-weight:600;color:var(--teal-950);}
+  .gcash-option{
+    display:flex;align-items:center;gap:14px;border:2px solid #0072CE;border-radius:12px;padding:16px 18px;
+    background:#f2f8ff;margin-bottom:22px;
+  }
+  .gcash-logo{
+    width:46px;height:46px;border-radius:10px;background:#0072CE;color:#fff;display:flex;align-items:center;
+    justify-content:center;font-family:'Fraunces',serif;font-weight:700;font-size:15px;flex-shrink:0;
+  }
+  .gcash-option .gtext strong{display:block;font-size:14.5px;color:var(--teal-950);}
+  .gcash-option .gtext span{font-size:12.5px;color:var(--ink-soft);}
+  .gcash-check{margin-left:auto;width:20px;height:20px;border-radius:50%;background:#0072CE;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;}
+
+  .gcash-panel{
+    border:1.5px solid #0072CE;border-radius:12px;padding:22px;background:#fff;max-width:380px;margin:0 auto;
+  }
+  .gcash-panel .ghead{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+  .gcash-panel .ghead strong{color:#0072CE;font-family:'Fraunces',serif;font-size:17px;}
+  .gcash-panel .field{margin-bottom:14px;}
+  .gcash-panel .field label{font-size:12px;color:var(--ink-soft);font-weight:600;}
+  .gcash-panel .field input{
+    width:100%;border:1.5px solid var(--line);border-radius:8px;padding:10px 12px;font-size:14px;margin-top:5px;
+  }
+  .gcash-total{display:flex;justify-content:space-between;font-size:14px;padding:10px 0;border-top:1px dashed var(--line);margin-bottom:14px;}
+  .gcash-total strong{color:#0072CE;font-size:17px;}
+  .btn-gcash{width:100%;background:#0072CE;color:#fff;padding:12px;font-weight:700;border-radius:8px;border:none;font-size:14.5px;cursor:pointer;}
+  .btn-gcash:hover{background:#005ea3;}
+  .pay-note{font-size:12px;color:var(--ink-soft);text-align:center;margin-top:12px;}
+
+  .gcash-tabs{display:flex;gap:6px;margin-bottom:18px;background:#f0f4f8;padding:4px;border-radius:9px;}
+  .gcash-tab{flex:1;text-align:center;padding:9px 6px;border-radius:7px;font-size:13px;font-weight:600;color:var(--ink-soft);cursor:pointer;border:none;background:none;font-family:'Inter';}
+  .gcash-tab.active{background:#fff;color:#0072CE;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+
+  /* ---------- Multiple payment channels ---------- */
+  .pay-channels{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px;}
+  .pay-chan{
+    border:1.5px solid var(--line);border-radius:10px;padding:12px 6px;background:#fff;cursor:pointer;
+    font-family:'Inter';font-size:12px;font-weight:600;color:var(--ink-soft);
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+  }
+  .pay-chan .pc-icon{
+    width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+    font-size:14px;font-weight:700;color:#fff;background:var(--chan-color,#999);
+  }
+  .pay-chan.active{border-color:var(--chan-color,#999);color:var(--ink);box-shadow:0 0 0 2px var(--chan-color,#999) inset;}
+  .ewallet-panel{border:1.5px solid #0072CE;border-radius:12px;padding:22px;background:#fff;max-width:380px;margin:0 auto;}
+  .ewallet-panel .ghead{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+  .ewallet-panel .ghead strong{font-family:'Fraunces',serif;font-size:17px;}
+
+  .cash-box, .bank-box{max-width:380px;margin:0 auto;text-align:center;}
+  .cash-box .cash-icon{
+    width:48px;height:48px;border-radius:50%;background:#c9822a;color:#fff;font-size:20px;
+    display:flex;align-items:center;justify-content:center;margin:0 auto 12px;
+  }
+  .cash-box p{font-size:13.5px;color:var(--ink-soft);margin:8px 0 18px;}
+  .bank-box{text-align:left;}
+  .bank-details{background:var(--cream);border-radius:10px;padding:14px 16px;margin-bottom:16px;}
+  .bank-details div{display:flex;justify-content:space-between;padding:5px 0;font-size:13.5px;}
+  .bank-details span{color:var(--ink-soft);}
+  .bank-details strong{color:var(--teal-950);}
+
+  .qr-box{text-align:center;}
+  .qr-frame{
+    width:190px;height:190px;margin:0 auto 14px;padding:10px;background:#fff;border:1.5px solid var(--line);
+    border-radius:10px;display:flex;align-items:center;justify-content:center;
+  }
+  .qr-frame svg{width:100%;height:100%;}
+  .qr-box .steps-mini{text-align:left;font-size:13px;color:var(--ink-soft);margin:0 0 16px;padding-left:18px;}
+  .qr-box .steps-mini li{margin-bottom:4px;}
+
+  .paid-box{text-align:center;padding:10px;}
+  .paid-box .check{width:48px;height:48px;border-radius:50%;background:#0072CE;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 14px;}
+  .paid-box .ref{font-family:'Fraunces',serif;font-size:15px;color:var(--teal-950);margin-top:6px;}
+  .free-box{text-align:center;padding:26px 10px;color:var(--ink-soft);}
+
+  /* ---------- Admin login / panel ---------- */
+  .admin-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:34px;max-width:380px;margin:0 auto;}
+  .admin-card h3{font-size:19px;margin-bottom:4px;}
+  .admin-card .sub{font-size:13px;color:var(--ink-soft);margin-bottom:20px;}
+  .admin-card .field{margin-bottom:14px;text-align:left;}
+  .admin-card .field label{font-size:12.5px;color:var(--ink-soft);font-weight:600;}
+  .admin-card .field input{
+    width:100%;border:1.5px solid var(--line);border-radius:8px;padding:11px 12px;font-size:14px;margin-top:6px;font-family:'Inter';
+  }
+  .admin-hint{font-size:12px;color:var(--ink-soft);background:var(--cream);border-radius:8px;padding:10px 12px;margin-top:16px;}
+  .admin-error{font-size:12.5px;color:#c0392b;margin-top:4px;display:none;}
+  .admin-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+  .admin-topbar .who{font-size:13px;color:var(--ink-soft);}
+  .btn-logout{background:none;border:1.5px solid var(--line);border-radius:8px;padding:8px 16px;font-size:13px;cursor:pointer;color:var(--ink-soft);font-family:'Inter';}
+  .btn-logout:hover{border-color:var(--sage);color:var(--ink);}
+  .rev-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+  .rev-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:14px 16px;}
+  .rev-card .num{font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:#fff;}
+  .rev-card .lab{font-size:11.5px;color:var(--sage);margin-top:2px;}
+
+  footer{padding:36px 0;border-top:1px solid var(--line);color:var(--ink-soft);font-size:13px;}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+
+  @media(max-width:820px){
+    .hero-grid,.cal-row,.form-grid{grid-template-columns:1fr;}
+    .service-grid{grid-template-columns:1fr 1fr;}
+    .rev-cards{grid-template-columns:1fr;}
+    nav{display:none;}
+    .offline-bar{flex-direction:column;align-items:flex-start;}
+  }
+  @media(max-width:520px){
+    .service-grid{grid-template-columns:1fr;}
+    .time-grid{grid-template-columns:1fr 1fr;}
+    .tray-icon{width:44px;height:44px;font-size:16px;bottom:16px;right:16px;}
+    .tray-menu{right:16px;bottom:68px;width:190px;}
+    .pay-channels{grid-template-columns:1fr 1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span>Relax Salon</div>
+    <nav>
+      <a href="#booking" style="text-decoration:none;">Services</a>
+      <a href="#booking" style="text-decoration:none;">Book Now</a>
+      <a href="#admin" style="text-decoration:none;">Admin Login</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow-line"></div>
+      <h1>Book your slot in <em>seconds</em>, not phone calls.</h1>
+      <p class="lede">A prototype online booking and appointment system — customers reserve a real-time slot, staff manage their day from one dashboard, no more double bookings or missed reminders.</p>
+      <div class="hero-stats">
+        <div><div class="num">24/7</div><div class="lab">Online booking</div></div>
+        <div><div class="num">0</div><div class="lab">Double bookings</div></div>
+        <div><div class="num">Auto</div><div class="lab">Reminders</div></div>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="tag">Today · Available slots</div>
+      <div class="slot"><span>9:00 AM</span><span class="pill">Open</span></div>
+      <div class="slot taken"><span>10:30 AM</span><span>Booked</span></div>
+      <div class="slot"><span>1:00 PM</span><span class="pill">Open</span></div>
+      <div class="slot taken"><span>3:30 PM</span><span>Booked</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="booking">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Book an appointment</h2>
+      <p>Try the flow below — it's a working demo of the customer booking journey.</p>
+    </div>
+
+    <div class="offline-bar" id="offlineBar">
+      <div class="left">
+        <span class="offline-dot" id="offlineDot"></span>
+        <div>
+          <div id="offlineLabel" style="font-weight:600;color:var(--teal-950);">Online — data syncs automatically</div>
+          <div class="desc">Simulates local/offline data storage: bookings made offline are saved on this device and synced once back online.</div>
+        </div>
+      </div>
+      <label class="switch-row">
+        Simulate offline mode
+        <span class="switch"><input type="checkbox" id="offlineToggle"><span class="slider"></span></span>
+      </label>
+    </div>
+
+    <div class="wizard">
+      <div class="steps">
+        <div class="step-tab active" data-step="1"><span class="n">1</span>Service</div>
+        <div class="step-tab" data-step="2"><span class="n">2</span>Date &amp; time</div>
+        <div class="step-tab" data-step="3"><span class="n">3</span>Your details</div>
+        <div class="step-tab" data-step="4"><span class="n">4</span>Payment</div>
+        <div class="step-tab" data-step="5"><span class="n">5</span>Confirm</div>
+      </div>
+
+      <!-- Step 1: Service -->
+      <div class="panel active" data-panel="1">
+        <div class="service-grid" id="serviceGrid"></div>
+      </div>
+
+      <!-- Step 2: Date/time -->
+      <div class="panel" data-panel="2">
+        <div class="cal-row">
+          <div class="day-list" id="dayList"></div>
+          <div class="time-grid" id="timeGrid"></div>
+        </div>
+      </div>
+
+      <!-- Step 3: Details -->
+      <div class="panel" data-panel="3">
+        <div class="summary-box" id="summaryBox"></div>
+        <div class="form-grid">
+          <div class="field"><label>Full name</label><input type="text" id="custName" placeholder="Juan Dela Cruz"></div>
+          <div class="field"><label>Mobile number</label><input type="text" id="custPhone" placeholder="09XX XXX XXXX"></div>
+          <div class="field full"><label>Email</label><input type="email" id="custEmail" placeholder="you@email.com"></div>
+          <div class="field full"><label>Notes (optional)</label><textarea id="custNotes" rows="2" placeholder="Anything the staff should know"></textarea></div>
+        </div>
+      </div>
+
+      <!-- Step 4: Payment (GCash) -->
+      <div class="panel" data-panel="4">
+        <div id="payWrap"></div>
+      </div>
+
+      <!-- Step 5: Confirmation -->
+      <div class="panel" data-panel="5">
+        <div class="confirm">
+          <div class="check">✓</div>
+          <h3>Appointment confirmed</h3>
+          <p style="color:var(--ink-soft);font-size:14px;">A confirmation, GCash payment receipt, and reminder will be sent to your email/SMS before your slot.</p>
+          <div class="confirm-detail" id="confirmDetail"></div>
+          <button class="btn-print" id="printBtn">🖨️ Print receipt</button>
+        </div>
+      </div>
+
+      <!-- Hidden print-only receipt (Printing feature) -->
+      <div id="printArea">
+        <h2 style="font-family:'Fraunces',serif;">Relax Salon — Appointment Receipt</h2>
+        <div id="printContent"></div>
+      </div>
+
+      <div class="wizard-actions">
+        <button class="btn btn-ghost" id="backBtn" style="visibility:hidden;">← Back</button>
+        <button class="btn btn-primary" id="nextBtn" disabled>Choose a service</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="admin">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Admin panel</h2>
+      <p>Staff/admin sign in to view live bookings and GCash payments.</p>
+    </div>
+
+    <!-- Login form -->
+    <div class="admin-card" id="adminLoginCard">
+      <h3>Admin Login</h3>
+      <div class="sub">Sign in to access the booking &amp; payments dashboard.</div>
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="adminUser" placeholder="admin">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="adminPass" placeholder="••••••••">
+      </div>
+      <div class="admin-error" id="adminError">Incorrect username or password. Please try again.</div>
+      <button class="btn btn-primary" style="width:100%;margin-top:6px;" id="adminLoginBtn">Log In</button>
+    </div>
+
+    <!-- Dashboard (hidden until logged in) -->
+    <div class="dash" id="adminDashboard" style="display:none;">
+      <div class="admin-topbar">
+        <span class="who">Signed in as <strong style="color:#fff;">admin</strong></span>
+        <button class="btn-logout" id="logoutBtn">Log out</button>
+      </div>
+
+      <div class="admin-toolbar">
+        <button class="btn-tool" id="popoutBtn">🗔 Open dashboard in new window</button>
+        <button class="btn-tool" id="exportBtn">⬇ Export report (.csv)</button>
+      </div>
+
+      <div class="rev-cards">
+        <div class="rev-card"><div class="num" id="revBookings">0</div><div class="lab">Total bookings</div></div>
+        <div class="rev-card"><div class="num" id="revPaid">₱0</div><div class="lab">GCash payments received</div></div>
+        <div class="rev-card"><div class="num" id="revPending">0</div><div class="lab">Pending payment</div></div>
+      </div>
+
+      <div class="dash-head">
+        <h3>Today's appointments</h3>
+        <span id="dashCount">0 booked</span>
+      </div>
+      <div id="dashEmpty">No appointments yet — confirm a booking above to see it here.</div>
+      <table class="dash-table" id="dashTable" style="display:none;">
+        <thead><tr><th>Time</th><th>Customer</th><th>Service</th><th>Payment</th><th>Storage</th><th>Status</th></tr></thead>
+        <tbody id="dashBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="tray-icon" id="trayIcon" title="System tray (desktop version)">🖥️</div>
+<div class="tray-menu" id="trayMenu">
+  <div class="t-title">Relax Salon — Desktop App</div>
+  <button id="trayNewBooking">➕ New booking</button>
+  <button id="trayOpenAdmin">🔐 Open admin dashboard</button>
+  <button id="trayToggleOffline">📶 Toggle offline mode</button>
+</div>
+
+<!-- Pop-out dashboard fallback modal (used when the browser/preview blocks window.open) -->
+<div class="popout-overlay" id="popoutOverlay">
+  <div class="popout-modal">
+    <div class="popout-modal-head">
+      <span>🗔 Relax Salon — Dashboard (pop-out view)</span>
+      <button class="popout-modal-close" id="popoutCloseBtn">✕</button>
+    </div>
+    <iframe id="popoutFrame" title="Relax Salon dashboard pop-out"></iframe>
+  </div>
+</div>
+
+<script>
+  const services = [
+    {id:'haircut', name:'Haircut', meta:'30 mins · Barber', price:'₱150'},
+    {id:'shave', name:'Hot Towel Shave', meta:'20 mins · Barber', price:'₱120'},
+    {id:'color', name:'Hair Color', meta:'90 mins · Stylist', price:'₱850'},
+    {id:'facial', name:'Facial Treatment', meta:'45 mins · Therapist', price:'₱450'},
+    {id:'massage', name:'Relax Massage', meta:'60 mins · Therapist', price:'₱600'},
+    {id:'consult', name:'Consultation', meta:'15 mins · Any staff', price:'Free'},
+  ];
+
+  const today = new Date();
+  const days = Array.from({length:5}).map((_,i)=>{
+    const d = new Date(today); d.setDate(today.getDate()+i);
+    return d;
+  });
+  const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  const allTimes = ['9:00 AM','9:30 AM','10:00 AM','10:30 AM','11:00 AM','1:00 PM','1:30 PM','2:00 PM','2:30 PM','3:00 PM','3:30 PM','4:00 PM'];
+  // pretend some slots are already booked, varies per day index
+  function bookedFor(dayIndex){
+    const sets = [
+      ['10:30 AM','2:00 PM','3:30 PM'],
+      ['9:00 AM','1:30 PM'],
+      ['11:00 AM','2:30 PM','3:00 PM','4:00 PM'],
+      ['9:30 AM'],
+      ['10:00 AM','1:00 PM','2:00 PM'],
+    ];
+    return sets[dayIndex] || [];
+  }
+
+  let state = { service:null, dayIndex:0, time:null, paid:false, settled:false, refNo:null, payMethod:'number', payChannel:'gcash', paidLabel:null, paidColor:null, channelLabel:null };
+  let step = 1;
+  let isOffline = false;
+  const bookings = [];
+
+  /* ---------- Offline mode toggle (Local/Offline Data Storage) ---------- */
+  const offlineBar = document.getElementById('offlineBar');
+  const offlineToggle = document.getElementById('offlineToggle');
+  const offlineLabel = document.getElementById('offlineLabel');
+
+  function setOffline(value){
+    isOffline = value;
+    offlineToggle.checked = value;
+    offlineBar.classList.toggle('is-offline', value);
+    offlineLabel.textContent = value
+      ? 'Offline — saving to local storage on this device'
+      : 'Online — data syncs automatically';
+  }
+  offlineToggle.addEventListener('change', (e)=> setOffline(e.target.checked));
+
+  function priceToNumber(priceStr){
+    if(!priceStr || priceStr.toLowerCase() === 'free') return 0;
+    return parseInt(priceStr.replace(/[^\d]/g,''), 10) || 0;
+  }
+
+  const serviceGrid = document.getElementById('serviceGrid');
+  services.forEach(s=>{
+    const el = document.createElement('div');
+    el.className = 'service-card';
+    el.innerHTML = `<h3>${s.name}</h3><div class="meta">${s.meta}</div><div class="price">${s.price}</div>`;
+    el.addEventListener('click', ()=>{
+      document.querySelectorAll('.service-card').forEach(c=>c.classList.remove('selected'));
+      el.classList.add('selected');
+      state.service = s;
+      updateNextButton();
+    });
+    serviceGrid.appendChild(el);
+  });
+
+  const dayList = document.getElementById('dayList');
+  days.forEach((d,i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'day-btn' + (i===0 ? ' active' : '');
+    btn.innerHTML = `<div class="d">${dayNames[d.getDay()]} ${d.getDate()}</div><div class="m">${monthNames[d.getMonth()]}</div>`;
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.day-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      state.dayIndex = i;
+      state.time = null;
+      renderTimes();
+      updateNextButton();
+    });
+    dayList.appendChild(btn);
+  });
+
+  const timeGrid = document.getElementById('timeGrid');
+  function renderTimes(){
+    timeGrid.innerHTML = '';
+    const booked = bookedFor(state.dayIndex);
+    allTimes.forEach(t=>{
+      const btn = document.createElement('button');
+      const isBooked = booked.includes(t);
+      btn.className = 'time-btn' + (isBooked ? ' booked' : '');
+      btn.textContent = t;
+      if(!isBooked){
+        btn.addEventListener('click', ()=>{
+          document.querySelectorAll('.time-btn').forEach(b=>b.classList.remove('selected'));
+          btn.classList.add('selected');
+          state.time = t;
+          updateNextButton();
+        });
+      } else {
+        btn.disabled = true;
+      }
+      timeGrid.appendChild(btn);
+    });
+  }
+  renderTimes();
+
+  function updateNextButton(){
+    const nextBtn = document.getElementById('nextBtn');
+    if(step===1){
+      nextBtn.disabled = !state.service;
+      nextBtn.textContent = state.service ? 'Continue' : 'Choose a service';
+    } else if(step===2){
+      nextBtn.disabled = !state.time;
+      nextBtn.textContent = state.time ? 'Continue' : 'Pick a time slot';
+    } else if(step===3){
+      const name = document.getElementById('custName').value.trim();
+      const phone = document.getElementById('custPhone').value.trim();
+      nextBtn.disabled = !(name && phone);
+      nextBtn.textContent = 'Continue to payment';
+    } else if(step===4){
+      const isFree = priceToNumber(state.service.price) === 0;
+      nextBtn.disabled = !(state.settled || isFree);
+      nextBtn.textContent = (state.settled || isFree) ? 'Continue' : 'Choose a payment method';
+    } else if(step===5){
+      nextBtn.textContent = 'Book another';
+    }
+  }
+
+  ['custName','custPhone','custEmail'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', updateNextButton);
+  });
+
+  function goToStep(n){
+    step = n;
+    document.querySelectorAll('.step-tab').forEach(t=>{
+      const tn = parseInt(t.dataset.step);
+      t.classList.toggle('active', tn===n);
+      t.classList.toggle('done', tn<n);
+    });
+    document.querySelectorAll('.panel').forEach(p=>{
+      p.classList.toggle('active', parseInt(p.dataset.panel)===n);
+    });
+    document.getElementById('backBtn').style.visibility = (n===1 || n===5) ? 'hidden' : 'visible';
+    if(n===3){
+      const d = days[state.dayIndex];
+      document.getElementById('summaryBox').innerHTML =
+        `<strong>${state.service.name}</strong> (${state.service.price}) on <strong>${dayNames[d.getDay()]}, ${monthNames[d.getMonth()]} ${d.getDate()}</strong> at <strong>${state.time}</strong>`;
+    }
+    if(n===4){
+      renderPayment();
+    }
+    updateNextButton();
+  }
+
+  function renderPayment(){
+    const payWrap = document.getElementById('payWrap');
+    const amount = priceToNumber(state.service.price);
+
+    if(amount === 0){
+      payWrap.innerHTML = `
+        <div class="free-box">
+          <div class="check" style="background:var(--sage);width:48px;height:48px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:20px;">✓</div>
+          <strong style="color:var(--teal-950);">No payment required</strong>
+          <p style="margin-top:6px;">This service (${state.service.name}) is free of charge. You may continue to confirm your appointment.</p>
+        </div>`;
+      state.paid = true;
+      state.settled = true;
+      return;
+    }
+
+    if(state.settled){
+      payWrap.innerHTML = `
+        <div class="pay-summary">
+          <div><div class="lab">Amount</div><div class="amt">₱${amount}</div></div>
+          <div style="text-align:right;"><div class="lab">Status</div><strong style="color:${state.paidColor};">${state.paidLabel}</strong></div>
+        </div>
+        <div class="paid-box">
+          <div class="check" style="background:${state.paidColor};">✓</div>
+          <strong style="color:var(--teal-950);">${state.paid ? 'Payment received' : 'Reservation confirmed'}</strong>
+          ${state.refNo ? `<div class="ref">Reference No. ${state.refNo}</div>` : ''}
+        </div>`;
+      return;
+    }
+
+    payWrap.innerHTML = `
+      <div class="pay-summary">
+        <div><div class="lab">Total to pay</div><div class="amt">₱${amount}</div></div>
+        <div style="text-align:right;"><div class="lab">Service</div><strong>${state.service.name}</strong></div>
+      </div>
+      <div class="pay-channels" id="payChannels">
+        <button class="pay-chan ${state.payChannel==='gcash'?'active':''}" data-chan="gcash" style="--chan-color:#0072CE;"><span class="pc-icon">GC</span><span>GCash</span></button>
+        <button class="pay-chan ${state.payChannel==='maya'?'active':''}" data-chan="maya" style="--chan-color:#00B14F;"><span class="pc-icon">My</span><span>Maya</span></button>
+        <button class="pay-chan ${state.payChannel==='bank'?'active':''}" data-chan="bank" style="--chan-color:#1F4E5F;"><span class="pc-icon">🏦</span><span>Bank Transfer</span></button>
+        <button class="pay-chan ${state.payChannel==='cash'?'active':''}" data-chan="cash" style="--chan-color:#C9822A;"><span class="pc-icon">₱</span><span>Cash</span></button>
+      </div>
+      <div id="payChannelBody"></div>`;
+
+    document.querySelectorAll('.pay-chan').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        state.payChannel = btn.dataset.chan;
+        state.payMethod = 'number';
+        renderPayment();
+      });
+    });
+
+    renderChannelBody(amount);
+  }
+
+  function finalizePayment(refNo, label, color, wasPaid){
+    state.paid = wasPaid;
+    state.settled = true;
+    state.refNo = refNo;
+    state.paidLabel = label;
+    state.paidColor = color;
+    state.channelLabel = label.replace(/^Paid via |^Reserved — /,'');
+    renderPayment();
+    updateNextButton();
+  }
+
+  function renderChannelBody(amount){
+    const body = document.getElementById('payChannelBody');
+
+    if(state.payChannel === 'cash'){
+      body.innerHTML = `
+        <div class="cash-box">
+          <div class="cash-icon">₱</div>
+          <strong style="color:var(--teal-950);">Pay with Cash</strong>
+          <p>No online payment needed — settle ₱${amount} in cash at the counter when you arrive for your appointment.</p>
+          <button class="btn btn-primary" style="width:100%;" id="cashConfirmBtn">Reserve appointment (pay at counter)</button>
+        </div>`;
+      document.getElementById('cashConfirmBtn').addEventListener('click', ()=>{
+        finalizePayment('CASH' + Math.floor(1000 + Math.random()*8999), 'Reserved — pay at counter', '#C9822A', false);
+      });
+      return;
+    }
+
+    if(state.payChannel === 'bank'){
+      body.innerHTML = `
+        <div class="bank-box">
+          <div class="bank-details">
+            <div><span>Bank</span><strong>BDO</strong></div>
+            <div><span>Account Name</span><strong>Relax Salon Services</strong></div>
+            <div><span>Account Number</span><strong>0012-3456-7890</strong></div>
+          </div>
+          <div class="field"><label>Reference / Transaction No.</label><input type="text" id="bankRef" placeholder="e.g. 000123456789"></div>
+          <button class="btn btn-primary" style="width:100%;" id="bankConfirmBtn">I've transferred ₱${amount}</button>
+          <div class="pay-note">This is a demo — no real bank transaction is verified.</div>
+        </div>`;
+      document.getElementById('bankConfirmBtn').addEventListener('click', ()=>{
+        const ref = document.getElementById('bankRef').value.trim();
+        if(!ref){
+          document.getElementById('bankRef').style.borderColor = '#c0392b';
+          return;
+        }
+        finalizePayment('BT' + ref.slice(-8), 'Paid via Bank Transfer', '#1F4E5F', true);
+      });
+      return;
+    }
+
+    // GCash or Maya — e-wallet flow with number/QR sub-tabs
+    const cfg = state.payChannel === 'maya'
+      ? { name:'Maya', color:'#00B14F', prefix:'MY' }
+      : { name:'GCash', color:'#0072CE', prefix:'GC' };
+
+    body.innerHTML = `
+      <div class="ewallet-panel" style="border-color:${cfg.color};">
+        <div class="ghead"><div class="pc-icon" style="--chan-color:${cfg.color};width:34px;height:34px;font-size:11px;">${cfg.prefix}</div><strong style="color:${cfg.color};">${cfg.name} Checkout</strong></div>
+        <div class="gcash-tabs">
+          <button class="gcash-tab ${state.payMethod !== 'qr' ? 'active' : ''}" id="tabNumber" type="button">Enter mobile number</button>
+          <button class="gcash-tab ${state.payMethod === 'qr' ? 'active' : ''}" id="tabQr" type="button">No cash? Scan QR</button>
+        </div>
+        <div id="ewalletMethodBody"></div>
+        <div class="gcash-total"><span>Amount to pay</span><strong style="color:${cfg.color};">₱${amount}.00</strong></div>
+        <div class="pay-note">This is a demo checkout — no real ${cfg.name} transaction is made.</div>
+      </div>`;
+
+    document.getElementById('tabNumber').addEventListener('click', ()=>{ state.payMethod='number'; renderChannelBody(amount); });
+    document.getElementById('tabQr').addEventListener('click', ()=>{ state.payMethod='qr'; renderChannelBody(amount); });
+
+    renderEwalletMethodBody(amount, cfg);
+  }
+
+  function makeFakeQr(seed, size){
+    // Deterministic pseudo-QR pattern (visual demo only — not a real scannable code)
+    let s = seed;
+    const rand = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+    const n = 21, cell = size / n;
+    let cells = '';
+    const isFinder = (r,c) => (r<7 && c<7) || (r<7 && c>=n-7) || (r>=n-7 && c<7);
+    for(let r=0;r<n;r++){
+      for(let c=0;c<n;c++){
+        if(isFinder(r,c)) continue;
+        if(rand() > 0.55){
+          cells += `<rect x="${c*cell}" y="${r*cell}" width="${cell}" height="${cell}" fill="#0f2e33"/>`;
+        }
+      }
+    }
+    function finder(fx,fy){
+      return `
+        <rect x="${fx}" y="${fy}" width="${cell*7}" height="${cell*7}" fill="#0f2e33"/>
+        <rect x="${fx+cell}" y="${fy+cell}" width="${cell*5}" height="${cell*5}" fill="#fff"/>
+        <rect x="${fx+cell*2}" y="${fy+cell*2}" width="${cell*3}" height="${cell*3}" fill="#0f2e33"/>`;
+    }
+    return `<svg viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
+      <rect width="${size}" height="${size}" fill="#fff"/>
+      ${cells}
+      ${finder(0,0)}
+      ${finder((n-7)*cell,0)}
+      ${finder(0,(n-7)*cell)}
+    </svg>`;
+  }
+
+  function renderEwalletMethodBody(amount, cfg){
+    const body = document.getElementById('ewalletMethodBody');
+    if(state.payMethod === 'qr'){
+      const seed = (state.service.id.length * 97 + state.dayIndex * 31 + amount) || 42;
+      body.innerHTML = `
+        <div class="qr-box">
+          <div class="qr-frame">${makeFakeQr(seed, 190)}</div>
+          <ol class="steps-mini">
+            <li>Open the ${cfg.name} app</li>
+            <li>Tap <strong>Scan QR</strong></li>
+            <li>Point your camera at this code and confirm the ₱${amount} payment</li>
+          </ol>
+          <button class="btn-gcash" style="background:${cfg.color};" id="ewalletQrPaidBtn">I've paid via QR</button>
+        </div>`;
+      document.getElementById('ewalletQrPaidBtn').addEventListener('click', ()=>{
+        finalizePayment(cfg.prefix + Math.floor(100000000 + Math.random()*899999999), 'Paid via ' + cfg.name, cfg.color, true);
+      });
+    } else {
+      body.innerHTML = `
+        <div class="field"><label>${cfg.name} mobile number</label><input type="text" id="ewalletNumber" placeholder="09XX XXX XXXX"></div>
+        <div class="field"><label>MPIN</label><input type="password" id="ewalletPin" placeholder="••••" maxlength="4"></div>
+        <button class="btn-gcash" style="background:${cfg.color};" id="ewalletPayBtn">Pay ₱${amount} via ${cfg.name}</button>`;
+      document.getElementById('ewalletPayBtn').addEventListener('click', ()=>{
+        const num = document.getElementById('ewalletNumber').value.trim();
+        if(!num){
+          document.getElementById('ewalletNumber').style.borderColor = '#c0392b';
+          return;
+        }
+        finalizePayment(cfg.prefix + Math.floor(100000000 + Math.random()*899999999), 'Paid via ' + cfg.name, cfg.color, true);
+      });
+    }
+  }
+
+  document.getElementById('backBtn').addEventListener('click', ()=>{
+    if(step>1) goToStep(step-1);
+  });
+
+  document.getElementById('nextBtn').addEventListener('click', ()=>{
+    if(step===5){
+      // reset for another booking
+      state = { service:null, dayIndex:0, time:null, paid:false, settled:false, refNo:null, payMethod:'number', payChannel:'gcash', paidLabel:null, paidColor:null, channelLabel:null };
+      document.querySelectorAll('.service-card').forEach(c=>c.classList.remove('selected'));
+      document.querySelectorAll('.day-btn').forEach((b,i)=>b.classList.toggle('active', i===0));
+      renderTimes();
+      goToStep(1);
+      return;
+    }
+    if(step===4){
+      const name = document.getElementById('custName').value.trim();
+      const email = document.getElementById('custEmail').value.trim();
+      const d = days[state.dayIndex];
+      const dateLabel = `${dayNames[d.getDay()]}, ${monthNames[d.getMonth()]} ${d.getDate()}`;
+      const amount = priceToNumber(state.service.price);
+      const wasOffline = isOffline;
+      const paymentLabel = amount === 0 ? 'Free' : (state.channelLabel || 'GCash');
+      bookings.push({
+        time: state.time, name, service: state.service.name, date: dateLabel,
+        status: 'Confirmed', amount, paid: state.paid, refNo: state.refNo,
+        channelLabel: paymentLabel, savedOffline: wasOffline
+      });
+      renderDashboard();
+      document.getElementById('confirmDetail').innerHTML = `
+        <div><span class="k">Service</span><span class="v">${state.service.name}</span></div>
+        <div><span class="k">Date</span><span class="v">${dateLabel}</span></div>
+        <div><span class="k">Time</span><span class="v">${state.time}</span></div>
+        <div><span class="k">Name</span><span class="v">${name || '—'}</span></div>
+        <div><span class="k">Payment</span><span class="v">${amount === 0 ? 'Free' : '₱' + amount + ' — ' + paymentLabel}</span></div>
+        ${state.refNo ? `<div><span class="k">Reference No.</span><span class="v">${state.refNo}</span></div>` : ''}
+        <div><span class="k">Confirmation to</span><span class="v">${email || '—'}</span></div>
+        <div><span class="k">Storage</span><span class="v">${wasOffline ? 'Saved locally (offline)' : 'Synced to server'}</span></div>
+      `;
+      document.getElementById('printContent').innerHTML = `
+        <p><strong>Service:</strong> ${state.service.name}</p>
+        <p><strong>Date:</strong> ${dateLabel}</p>
+        <p><strong>Time:</strong> ${state.time}</p>
+        <p><strong>Name:</strong> ${name || '—'}</p>
+        <p><strong>Payment:</strong> ${amount === 0 ? 'Free' : '₱' + amount + ' — ' + paymentLabel}</p>
+        ${state.refNo ? `<p><strong>Reference No.:</strong> ${state.refNo}</p>` : ''}
+        <p style="margin-top:20px;color:#666;font-size:12px;">Printed from Relax Salon Booking System</p>
+      `;
+      goToStep(5);
+      return;
+    }
+    goToStep(step+1);
+  });
+
+  document.getElementById('printBtn').addEventListener('click', ()=> window.print());
+
+  function renderDashboard(){
+    const empty = document.getElementById('dashEmpty');
+    const table = document.getElementById('dashTable');
+    const body = document.getElementById('dashBody');
+    document.getElementById('dashCount').textContent = bookings.length + ' booked';
+    if(bookings.length===0){
+      empty.style.display='block'; table.style.display='none';
+    } else {
+      empty.style.display='none'; table.style.display='table';
+      body.innerHTML = bookings.map(b=>`
+        <tr>
+          <td>${b.time}</td>
+          <td>${b.name || '—'}</td>
+          <td>${b.service}</td>
+          <td>${b.amount === 0 ? 'Free' : '₱' + b.amount + ' (' + b.channelLabel + ')'}</td>
+          <td><span class="status ${b.savedOffline ? 'sync-pending' : 'sync-done'}">${b.savedOffline ? 'Pending sync' : 'Synced'}</span></td>
+          <td><span class="status confirmed">${b.status}</span></td>
+        </tr>
+      `).join('');
+    }
+    const totalPaid = bookings.reduce((sum,b)=> sum + (b.paid ? b.amount : 0), 0);
+    const pendingCount = bookings.filter(b=> !b.paid && b.amount > 0).length;
+    document.getElementById('revBookings').textContent = bookings.length;
+    document.getElementById('revPaid').textContent = '₱' + totalPaid;
+    document.getElementById('revPending').textContent = pendingCount;
+  }
+
+  /* ---------- Admin login ---------- */
+  const ADMIN_USER = 'admin';
+  const ADMIN_PASS = 'admin123';
+
+  document.getElementById('adminLoginBtn').addEventListener('click', ()=>{
+    const u = document.getElementById('adminUser').value.trim();
+    const p = document.getElementById('adminPass').value.trim();
+    const err = document.getElementById('adminError');
+    if(u === ADMIN_USER && p === ADMIN_PASS){
+      err.style.display = 'none';
+      document.getElementById('adminLoginCard').style.display = 'none';
+      document.getElementById('adminDashboard').style.display = 'block';
+      renderDashboard();
+    } else {
+      err.style.display = 'block';
+    }
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', ()=>{
+    document.getElementById('adminDashboard').style.display = 'none';
+    document.getElementById('adminLoginCard').style.display = 'block';
+    document.getElementById('adminUser').value = '';
+    document.getElementById('adminPass').value = '';
+  });
+
+  ['adminUser','adminPass'].forEach(id=>{
+    document.getElementById(id).addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter') document.getElementById('adminLoginBtn').click();
+    });
+  });
+
+  /* ---------- Multi-window support: pop out dashboard into its own window ---------- */
+  document.getElementById('popoutBtn').addEventListener('click', ()=>{
+    try {
+      const rows = bookings.map(b => `
+        <tr>
+          <td>${b.time}</td><td>${b.name || '—'}</td><td>${b.service}</td>
+          <td>${b.amount === 0 ? 'Free' : '₱' + b.amount + ' (' + b.channelLabel + ')'}</td>
+          <td>${b.savedOffline ? 'Pending sync' : 'Synced'}</td>
+        </tr>`).join('') || `<tr><td colspan="5" style="color:#888;">No bookings yet.</td></tr>`;
+
+      const dashboardHtml = `
+        <!DOCTYPE html><html><head><title>Relax Salon — Dashboard (separate window)</title>
+        <style>
+          body{font-family:Arial,sans-serif;background:#0f2e33;color:#faf7f2;margin:0;padding:24px;}
+          h2{margin-top:0;}
+          table{width:100%;border-collapse:collapse;font-size:13px;}
+          th,td{text-align:left;padding:8px;border-bottom:1px solid rgba(255,255,255,.15);}
+          th{color:#7fa99b;font-size:11px;text-transform:uppercase;}
+          .note{font-size:12px;color:#bcd;margin-top:16px;}
+        </style></head>
+        <body>
+          <h2>Relax Salon — Appointments (pop-out window)</h2>
+          <table><thead><tr><th>Time</th><th>Customer</th><th>Service</th><th>Payment</th><th>Storage</th></tr></thead>
+          <tbody>${rows}</tbody></table>
+          <p class="note">This demonstrates multi-window support — in the desktop version, staff can keep this dashboard open in its own window while working in the main app.</p>
+        </body></html>
+      `;
+
+      // A real separate browser window only makes sense when this page is
+      // top-level (not framed). Published/embedded views (including this
+      // one, and most mobile in-app previews) run inside a frame where
+      // window.open is commonly blocked or unreliable, so those always
+      // get the in-page modal instead of risking a silent failure.
+      let isFramed = true;
+      try { isFramed = window.self !== window.top; } catch (err) { isFramed = true; }
+
+      let openedRealWindow = false;
+      if (!isFramed) {
+        let win = null;
+        try {
+          win = window.open('', 'RelaxSalonDashboard', 'width=640,height=560');
+        } catch (err) {
+          win = null;
+        }
+        if (win) {
+          try {
+            win.document.write(dashboardHtml);
+            win.document.close();
+            win.focus();
+            openedRealWindow = true;
+          } catch (err) {
+            openedRealWindow = false;
+          }
+        }
+      }
+
+      if (!openedRealWindow) {
+        document.getElementById('popoutFrame').srcdoc = dashboardHtml;
+        document.getElementById('popoutOverlay').classList.add('open');
+      }
+    } catch (err) {
+      // Absolute last resort: never let this handler throw.
+    }
+  });
+
+  document.getElementById('popoutCloseBtn').addEventListener('click', ()=>{
+    document.getElementById('popoutOverlay').classList.remove('open');
+  });
+  document.getElementById('popoutOverlay').addEventListener('click', (e)=>{
+    if (e.target.id === 'popoutOverlay') document.getElementById('popoutOverlay').classList.remove('open');
+  });
+
+  /* ---------- OS integration: export report (file-association style download) ---------- */
+  document.getElementById('exportBtn').addEventListener('click', async ()=>{
+    let csv = 'Time,Customer,Service,Amount,Payment Method,Paid,Storage\n';
+    bookings.forEach(b=>{
+      csv += `${b.time},${(b.name||'').replace(/,/g,' ')},${b.service},${b.amount},${b.channelLabel},${b.paid ? 'Yes' : 'No'},${b.savedOffline ? 'Pending sync' : 'Synced'}\n`;
+    });
+
+    // When running inside a hosted preview environment, offer the file
+    // through the platform's "downloads" capability. When opened as a
+    // plain HTML file (no such capability available), fall back to a
+    // normal browser download link.
+    let handledByPlatform = false;
+    try {
+      if (window.claude && typeof window.claude.use === 'function') {
+        const downloads = await window.claude.use('downloads');
+        if (downloads) {
+          await downloads.save({ filename: 'relax-salon-appointments.csv', data: csv });
+          handledByPlatform = true;
+        }
+      }
+    } catch (err) {
+      handledByPlatform = false;
+    }
+
+    if (!handledByPlatform) {
+      try {
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'relax-salon-appointments.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        // Saving isn't available in this environment — fail silently
+        // rather than throwing, so the rest of the page keeps working.
+      }
+    }
+  });
+
+  /* ---------- System tray (desktop-style quick access icon) ---------- */
+  const trayIcon = document.getElementById('trayIcon');
+  const trayMenu = document.getElementById('trayMenu');
+  trayIcon.addEventListener('click', ()=> trayMenu.classList.toggle('open'));
+  document.addEventListener('click', (e)=>{
+    if(!trayMenu.contains(e.target) && e.target !== trayIcon){
+      trayMenu.classList.remove('open');
+    }
+  });
+  document.getElementById('trayNewBooking').addEventListener('click', ()=>{
+    trayMenu.classList.remove('open');
+    document.getElementById('booking').scrollIntoView({behavior:'smooth'});
+  });
+  document.getElementById('trayOpenAdmin').addEventListener('click', ()=>{
+    trayMenu.classList.remove('open');
+    document.getElementById('admin').scrollIntoView({behavior:'smooth'});
+  });
+  document.getElementById('trayToggleOffline').addEventListener('click', ()=>{
+    trayMenu.classList.remove('open');
+    setOffline(!isOffline);
+    document.getElementById('booking').scrollIntoView({behavior:'smooth'});
+  });
+
+  setOffline(false);
+  updateNextButton();
+</script>
+
+</body>
+</html>
